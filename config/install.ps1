@@ -13,12 +13,18 @@ echo "$tinyTexBin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 $env:Path = "$tinyTexBin;$env:Path"
 
 Write-Host ">>> [Step 4/4] Installing dependencies..."
-# 核心修改：加入了 latexmk
-# 同时保留了之前分析出的所有论文写作必备包
-# --- 核心修改：追加了 abstract, hologo, fancyvrb 等模板常用包 ---
-tlmgr install latexmk ctex xecjk beamer pgf ms gbt7714 fandol tools `
-              biblatex biber siunitx caption subcaption cleveref `
-              enumitem multirow makecell listings mathtools microtype `
-              abstract hologo fancyvrb environ trimspaces
+# --- 终极全家桶安装命令 ---
+# 1. 基础编译工具: latexmk, tools (calc, indentfirst等)
+# 2. 中文环境: ctex, xecjk, fandol (字体), zhnumber
+# 3. 字体与数学: tex-gyre (修复字体报错), newtx (模板数学字体), amscls, amsmath
+# 4. 模板核心依赖: appendix (修复本次报错), abstract, hologo, kvoptions, etoolbox
+# 5. 常用功能: biblatex, biber, caption, enumitem, listings, fancyvrb, geometry, graphics, xcolor
+tlmgr install latexmk tools `
+              ctex xecjk fandol zhnumber `
+              tex-gyre newtx amscls amsmath amsfonts `
+              appendix abstract hologo kvoptions etoolbox `
+              biblatex biber caption subcaption enumitem listings fancyvrb `
+              geometry graphics xcolor booktabs multirow makecell `
+              pgf ms gbt7714 siunitx cleveref microtype environ trimspaces
 
 Write-Host ">>> SUCCESS: Installation script finished."
