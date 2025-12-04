@@ -1,42 +1,68 @@
-name: Test TinyTeX on Windows
+name: Verify and Test TinyTeX on Windows
 
 on: [push]
 
 jobs:
-  build:
-    runs-on: windows-latest  # 重点：指定在 Windows 环境运行
+  test-on-windows:
+    runs-on: windows-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    # 1. 创建一个测试用的 LaTeX 文件（含中文、TikZ）
-    - name: Create Test File
+    # --- 第一阶段：精简验证 ---
+    - name: 1. 验明正身 (精简版)
       run: |
-        Set-Content -Path test.tex -Value "\documentclass{beamer} \usepackage{ctex} \usepackage{tikz} \begin{document} \begin{frame}{测试} \begin{tikzpicture}\draw(0,0)circle(1);\end{tikzpicture} 中文成功 \end{frame} \end{document}"
+        Write-Host "正在验证运行环境..."
+        Write-Host "操作系统内核: $env:OS"
+        $osVer = [System.Environment]::OSVersion.VersionString
+        Write-Host "系统版本信息: $osVer"
+        if ($env:OS -ne "Windows_NT") { throw "这台机器不是 Windows!" }
+        Write-Host "验证通过：确认为 Windows 环境。"
 
-    # 2. 运行你要测试的“一键安装脚本”
-    - name: Install TinyTeX (The Script)
+    # --- 第二阶段：准备测试文件 ---
+    - name: 2. 创建测试用 LaTeX 文件
       run: |
-        Set-ExecutionPolicy Bypass -Scope Process -Force
-        [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
-        iex ((New-Object System.Net.WebClient).DownloadString('https://github.com/rstudio/tinytex/raw/master/tools/install-windows.ps1'))
+        # 创建一个包含中文和绘图功能的测试文件
+        $texContent = @"
+        \documentclass{beamer}
+        \usepackage{ctex}
+        \usepackage{tikz}
+        \begin{document}
+        \begin{frame}{测试成功}
+        \begin{center}
+            \begin{tikzpicture}\draw[fill=green](0,0)circle(1.5);\node at(0,0){\Huge 中文}; \end{tikzpicture}
+            \\
+            \vspace{1em}
+            如果看到绿色的圆和汉字，说明 TinyTeX 安装成功！
+        \end{center}
+        \end{frame}
+        \end{document}
+        "@
+        Set-Content -Path test.tex -Value $texContent -Encoding UTF8
 
-    # 3. 把 TinyTeX 加入临时环境变量 (模拟重启终端后的效果)
-    - name: Add to PATH
+    # --- 第三阶段：修复后的安装脚本 ---
+    - name: 3. 安装 TinyTeX (使用官方最新脚本)
+      # 使用 cmd shell 来运行官方提供的批处理安装脚本，更稳定
+      shell: cmd
+      run: |
+        curl -sL "https://github.com/rstudio/tinytex-releases/releases/download/daily/install-windows.bat" -o install.bat
+        install.bat
+
+    # --- 第四阶段：配置环境和包 ---
+    - name: 4. 将 TinyTeX 加入临时环境变量
+      # 安装完成后，需要把它的路径告诉系统，否则找不到 xelatex 命令
       run: echo "$env:APPDATA\TinyTeX\bin\windows" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
-    # 4. 模拟用户安装常用包 (中文 + Beamer + TikZ)
-    - name: Install Packages
-      run: tlmgr install ctex xecjk beamer pgf ms
+    - name: 5. 安装必要的中文和绘图宏包
+      # 首次运行需要手动安装这些包，以后就不用了
+      run: tlmgr install ctex xecjk beamer pgf ms gbt7714
 
-    # 5. 测试编译
-    - name: Compile PDF
-      run: xelatex test.tex
+    # --- 第五阶段：编译测试 ---
+    - name: 6. 编译 PDF
+      run: xelatex -interaction=nonstopmode test.tex
 
-    # 6. (可选) 上传生成的 PDF 给你检查
-    - name: Upload PDF
+    # --- 第六阶段：上传结果 ---
+    - name: 7. 上传生成的 PDF 供检查
+      if: success() # 只有编译成功才上传
       uses: actions/upload-artifact@v4
       with:
-        name: result-pdf
+        name: test-result-pdf
         path: test.pdf
