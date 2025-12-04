@@ -33,8 +33,8 @@ jobs:
         # -interaction=nonstopmode : 遇到错误不暂停
         # -file-line-error : 报错显示具体文件和行号
         # -outdir=.   : 输出在当前目录
-        latexmk -xelatex -synctex=1 -interaction=nonstopmode -file-line-error -outdir=. main.tex
-
+        latexmk -xelatex -synctex=1 -interaction=nonstopmode -file-line-error main.tex
+        
     # 5. 上传结果
     - name: Upload Artifact
       if: success()
