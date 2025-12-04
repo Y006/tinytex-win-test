@@ -1,65 +1,66 @@
 % ===================================================================
 % 文件名: tex/demo/main.tex
-% 用途: TinyTeX 全栈环境自检报告 (不依赖 elegantpaper)
+% 用途: TinyTeX 环境自检报告 (精简版 - 移除 newtx 字体依赖)
 % ===================================================================
 
 % [Group 2] 关键：强制指定 Fandol 字体，兼容 Windows Server
 \PassOptionsToPackage{fontset=fandol}{ctex}
 
-% [Group 1] 使用标准 article 类，测试基础 tools
+% [Group 1] 使用标准 article 类
 \documentclass[a4paper, 12pt]{article}
 
 % ===================================================================
-% 0. 宏包加载区 (对应 install-tinytex.ps1 的 5 个分组)
+% 0. 宏包加载区
 % ===================================================================
 
 % --- [Group 2] 中文支持 ---
 \usepackage{ctex}      % 中文核心
-\usepackage{zhnumber}  % 中文数字 (一、二、三)
+\usepackage{zhnumber}  % 中文数字
 
-% --- [Group 3] 字体与数学 ---
-\usepackage{iftex}     % 引擎检测
-\usepackage{amsmath, amsfonts, amssymb} % 数学三剑客
-\usepackage{esint}     % 扩展积分符号
-% newtx 会改变默认字体 (Times 风格)，验证字体包是否安装
-\usepackage{newtxtext, newtxmath} 
+% --- [Group 3] 字体与数学 (已修改) ---
+\usepackage{iftex}     
+\usepackage{amsmath, amsfonts, amssymb} 
+\usepackage{esint}     
 
-% --- [Group 4] 模板逻辑与底层工具 ---
-\usepackage{appendix}  % 附录支持
-\usepackage{abstract}  % 摘要定制
-\usepackage{hologo}    % TeX Logo 显示 (如 \XeTeX)
-\usepackage[stable]{footmisc} % 脚注增强
-\usepackage{etoolbox}  % 编程逻辑工具
+% 【修改点】注释掉了 newtx 字体包
+% 移除了对 mweights, scalefnt, fontaxes, realscripts 的依赖
+% \usepackage{newtxtext, newtxmath} 
 
-% --- [Group 5] 格式与功能 (重头戏) ---
-\usepackage[margin=2.5cm]{geometry} % 页面尺寸
-\usepackage{xcolor}    % 颜色支持
-\usepackage{graphicx}  % 图片支持
-\usepackage{mwe}       % 测试用图片资源 (example-image)
-\usepackage{booktabs}  % 专业三线表
-\usepackage{multirow}  % 表格合并行
-\usepackage{makecell}  % 表格单元格换行
-\usepackage{caption}   % 标题定制
-\usepackage{subcaption}% 子图支持
-\usepackage{enumitem}  % 列表定制
-\usepackage{listings}  % 代码高亮
-\usepackage{fancyvrb}  % 增强 verbatim
-\usepackage{siunitx}   % 物理单位
-\usepackage{microtype} % 排版微调
-\usepackage{tikz}      % 绘图底层 (pgf)
-\usepackage[colorlinks=true, linkcolor=blue]{hyperref} % 超链接
-\usepackage{cleveref}  % 智能引用 (必须放在 hyperref 之后)
+% --- [Group 4] 模板逻辑 ---
+\usepackage{appendix}  
+\usepackage{abstract}  
+\usepackage{hologo}    
+\usepackage[stable]{footmisc} 
+\usepackage{etoolbox}  
 
-% --- [Group 5] 参考文献 (使用 biblatex) ---
-\usepackage[style=gb7714-2015, backend=biber]{biblatex} % 调用 gbt7714 样式
+% --- [Group 5] 格式与功能 ---
+\usepackage[margin=2.5cm]{geometry} 
+\usepackage{xcolor}    
+\usepackage{graphicx}  
+\usepackage{mwe}       % 占位图
+\usepackage{booktabs}  % 三线表
+\usepackage{multirow}  
+\usepackage{makecell}  
+\usepackage{caption}   
+\usepackage{subcaption}
+\usepackage{enumitem}  
+\usepackage{listings}  
+\usepackage{fancyvrb}  
+\usepackage{siunitx}   
+\usepackage{microtype} 
+\usepackage{tikz}      % 绘图
+\usepackage[colorlinks=true, linkcolor=blue]{hyperref} 
+\usepackage{cleveref}  
+
+% --- [Group 5] 参考文献 (使用 biblatex + biber) ---
+\usepackage[style=gb7714-2015, backend=biber]{biblatex}
 
 % ===================================================================
 % 1. 准备测试数据
 % ===================================================================
-% 自动生成参考文献数据
 \begin{filecontents}[overwrite]{ref.bib}
 @manual{tinytex,
-  title  = {TinyTeX 文档},
+  title  = {TinyTeX Documentation},
   author = {Yihui Xie},
   year   = {2024},
   url    = {https://yihui.org/tinytex/}
@@ -87,9 +88,9 @@
 % ===================================================================
 % 正文开始
 % ===================================================================
-\title{\textbf{TinyTeX 环境全栈自检报告}}
+\title{\textbf{TinyTeX 环境自检报告 (无 NewTX)}}
 \author{CI/CD Pipeline}
-\date{\zhtoday} % 测试 ctex 的日期功能
+\date{\zhtoday}
 
 \begin{document}
 
@@ -97,131 +98,99 @@
 
 \begin{abstract}
     \noindent 
-    本报告完全脱离 \texttt{elegantpaper} 等外部模板，仅使用标准 \texttt{article} 类，
-    旨在验证 \texttt{install-tinytex.ps1} 脚本中定义的 5 个分组宏包是否全部安装成功并能正常协同工作。
-    如果本文档编译无误，说明环境已具备处理中文、数学、绘图、代码及参考文献的全部能力。
+    本报告已移除 \texttt{newtxtext} 和 \texttt{newtxmath} 宏包，使用 LaTeX 默认字体（Computer Modern）。
+    这消除了对底层字体工具（如 \texttt{scalefnt}, \texttt{mweights}）的依赖，主要验证中文、绘图、表格及引用功能。
 \end{abstract}
 
 \tableofcontents
 \vspace{1cm}
 
 % -------------------------------------------------------------------
-\section{核心环境与中文支持 (Group 1 \& 2)}
+\section{核心环境与中文支持}
 % -------------------------------------------------------------------
-\subsection{编译引擎检测 (iftex)}
+\subsection{编译引擎}
 当前编译引擎为：
 \ifxetex
-    \textcolor{green!60!black}{\textbf{\hologo{XeTeX}}} (检测通过，符合预期)
+    \textcolor{green!60!black}{\textbf{\hologo{XeTeX}}} (检测通过)
 \else
-    \textcolor{red}{\textbf{未知引擎}} (检测失败)
+    \textcolor{red}{\textbf{未知引擎}}
 \fi
 
-\subsection{中文与字体 (ctex + fandol + zhnumber)}
+\subsection{中文与字体}
 \begin{itemize}
-    \item \textbf{基础中文}：汉字显示正常，说明 \texttt{ctex} 宏包及 Fandol 字体集已正确加载。
-    \item \textbf{中文数字}：调用 \texttt{zhnumber} 包，数字 2025 转换为：\textbf{\zhnumber{2025}}。
-    \item \textbf{字体样式}：\textit{Italic 样式 (Fandol楷体)}，\textbf{Bold 样式 (Fandol黑体)}。
+    \item \textbf{基础中文}：汉字显示正常 (ctex + fandol)。
+    \item \textbf{中文数字}：2025 -> \textbf{\zhnumber{2025}}。
+    \item \textbf{字体样式}：\textit{楷体 Italic}，\textbf{黑体 Bold}。
 \end{itemize}
 
 % -------------------------------------------------------------------
-\section{数学与字体 (Group 3)}
+\section{数学公式 (Default Font)}
 % -------------------------------------------------------------------
-本节测试 \texttt{newtx} 字体包与 \texttt{ams*} 系列宏包。
+测试默认数学字体：
 \begin{equation}
     \label{eq:maxwell}
     \oint_{\partial \Omega} \mathbf{E} \cdot d\mathbf{l} = -\frac{d}{dt} \iint_S \mathbf{B} \cdot d\mathbf{S}
 \end{equation}
-\textbf{测试点}：
-\begin{enumerate}[label=\alph*)]
-    \item 公式字体应为 Times 风格 (由 \texttt{newtxmath} 提供)。
-    \item 闭合积分号 $\oint$ 显示正常 (由 \texttt{esint} 或基础包提供)。
-    \item 智能引用测试：参见 \Cref{eq:maxwell} (由 \texttt{cleveref} 提供)。
-\end{enumerate}
+智能引用测试：\Cref{eq:maxwell}。
 
 % -------------------------------------------------------------------
-\section{多媒体与绘图 (Group 5)}
+\section{多媒体与绘图}
 % -------------------------------------------------------------------
-\subsection{智能子图 (caption + subcaption + mwe)}
-测试 \texttt{mwe} 包提供的占位图以及子图排版功能。
-
+\subsection{智能子图 (mwe + subcaption)}
 \begin{figure}[htbp]
     \centering
     \begin{subfigure}{0.45\textwidth}
         \includegraphics[width=\linewidth]{example-image-a}
-        \caption{测试图 A}
+        \caption{Image A}
     \end{subfigure}
     \hfill
     \begin{subfigure}{0.45\textwidth}
         \includegraphics[width=\linewidth]{example-image-b}
-        \caption{测试图 B}
+        \caption{Image B}
     \end{subfigure}
-    \caption{子图功能测试}
+    \caption{子图测试}
 \end{figure}
 
-\subsection{矢量绘图 (pgf/tikz)}
-测试 \texttt{pgf} 底层库是否能绘制图形。
-
+\subsection{矢量绘图 (TikZ)}
 \begin{center}
 \begin{tikzpicture}
-    % 画一个流程图节点
-    \node (start) [rectangle, rounded corners, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=red!30] {开始测试};
-    \node (process) [rectangle, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=orange!30, below of=start, node distance=2cm] {加载宏包};
-    \node (end) [rectangle, rounded corners, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=green!30, below of=process, node distance=2cm] {编译成功};
-    
-    \draw [->, thick] (start) -- (process);
-    \draw [->, thick] (process) -- (end);
+    \node (start) [rectangle, rounded corners, draw=black, fill=red!30] {Start};
+    \node (end) [rectangle, rounded corners, draw=black, fill=green!30, right of=start, node distance=4cm] {Success};
+    \draw [->, thick] (start) -- (end);
 \end{tikzpicture}
 \end{center}
 
 % -------------------------------------------------------------------
-\section{复杂表格与代码 (Group 5)}
+\section{复杂表格与代码}
 % -------------------------------------------------------------------
-\subsection{专业表格 (booktabs + multirow + makecell)}
+\subsection{专业表格}
 \begin{table}[htbp]
     \centering
-    \caption{宏包安装情况概览}
-    \begin{tabular}{llcc}
+    \caption{安装状态表}
+    \begin{tabular}{llc}
         \toprule
-        \textbf{分组} & \textbf{核心包} & \textbf{状态} & \textbf{备注} \\
+        \textbf{组件} & \textbf{关键包} & \textbf{状态} \\
         \midrule
-        Group 1 & latexmk & \textcolor{blue}{OK} & 自动化 \\
-        Group 2 & \makecell[l]{ctex\\xecjk} & \textcolor{blue}{OK} & 中文 \\
-        \multirow{2}{*}{Group 5} & tikz & \textcolor{blue}{OK} & 绘图 \\
-                                 & biblatex & \textcolor{blue}{OK} & 引用 \\
+        Tools & latexmk & OK \\
+        Chinese & ctex & OK \\
         \bottomrule
     \end{tabular}
 \end{table}
 
-\subsection{代码高亮 (listings)}
-测试代码环境及 \texttt{siunitx} 单位显示：
-\begin{lstlisting}[language=TeX, caption=LaTeX 代码示例]
+\subsection{代码高亮}
+\begin{lstlisting}[language=TeX, caption=LaTeX Code]
 % 物理单位测试
-重力加速度: \qty{9.8}{\meter\per\second\squared}
-光速: \qty{2.99e8}{\meter\per\second}
+Speed: \qty{2.99e8}{\meter\per\second}
 \end{lstlisting}
-渲染结果：重力加速度: \qty{9.8}{\meter\per\second\squared}。
 
 % -------------------------------------------------------------------
-\section{底层逻辑与引用 (Group 4 \& 5)}
+\section{引用测试}
 % -------------------------------------------------------------------
-\subsection{编程逻辑 (etoolbox)}
-\textbf{逻辑测试}：
-\ifdef{\maketitle}
-    {命令 \texttt{\textbackslash maketitle} 已定义 (etoolbox 工作正常)。}
-    {错误：命令未定义。}
-
-\subsection{参考文献 (biblatex + gbt7714)}
-本文引用了 TinyTeX 手册\cite{tinytex}以及 LaTeX3 项目\cite{latex3}。
-请检查文末是否生成了符合 GB/T 7714 标准的参考文献列表。
-
-% 打印参考文献
+本文使用了 TinyTeX\cite{tinytex} 进行构建。
 \printbibliography[heading=bibintoc, title=参考文献]
 
-% -------------------------------------------------------------------
 \appendix
-\section{附录 (appendix)}
-% -------------------------------------------------------------------
-本附录用于测试 \texttt{appendix} 宏包。
-如果能看到这里的 "A 附录"，说明文档结构完整。
+\section{附录测试}
+附录内容正常显示。
 
 \end{document}
