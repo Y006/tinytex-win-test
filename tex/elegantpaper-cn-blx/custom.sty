@@ -1,0 +1,82 @@
+% ===== Custom LaTeX Package =====
+% 这里放你所有自定义的宏包、命令、格式等
+
+% ===========================================
+%           1. 基础宏包加载
+% ===========================================
+\usepackage{array}      % 表格增强
+\usepackage{makecell}   % 单元格换行与样式
+\usepackage{graphicx}   % 图片支持
+\usepackage{xcolor}     % 颜色支持 (表格色块和警告文字都需要)
+
+% ===========================================
+%           2. 表格自定义命令
+% ===========================================
+% 定义 \ccr{颜色}：生成一个指定颜色的 1cm x 1cm 色块，用于表格图例
+\newcommand{\ccr}[1]{\makecell{{\color{#1}\rule{1cm}{1cm}}}}
+
+\usepackage{graphicx}
+\usepackage{xcolor}
+
+\usepackage{graphicx}
+\usepackage{xcolor}
+
+% ==================================================
+%           智能图片加载系统 (Smart Graphics v2.1)
+% ==================================================
+
+% --- 1. 定义极速编译开关 ---
+\newif\iffastcompile
+% 【控制面板】
+% true  = 极速 Draft 模式 (读取真实图片尺寸画框，不渲染像素，极快且布局精准)
+% false = 正常发布模式 (渲染真实图片像素)
+\fastcompilefalse 
+% \fastcompiletrue 
+
+% --- 2. 劫持并重定义 \includegraphics ---
+\let\oldincludegraphics\includegraphics 
+
+\renewcommand{\includegraphics}[2][]{%
+    \iffastcompile
+        % ============================================
+        % [模式1: 极速 Draft 模式]
+        % ============================================
+        \IfFileExists{#2}{%
+            % 情况A: 原图存在 -> 仅画框 (保留原布局)
+            \oldincludegraphics[draft, #1]{#2}%
+        }{%
+            % 情况B: 原图不存在 -> 报错 + 小图标
+            \typeout{Warning: Image file '#2' not found (Draft Mode).}%
+            % 强制使用 3cm 宽的小图，而不是原图的大尺寸
+            \oldincludegraphics[width=3cm]{example-image}%
+            % 换行 + 红色粗体路径
+            \\ \textcolor{red}{\small\bfseries [Missing: \texttt{\detokenize{#2}}]}%
+        }%
+    \else
+        % ============================================
+        % [模式2: 正常发布模式]
+        % ============================================
+        \IfFileExists{#2}{%
+            % 情况A: 原图存在 -> 正常渲染
+            \oldincludegraphics[#1]{#2}%
+        }{%
+            % 情况B: 原图不存在 -> 报错 + 小图标
+            \typeout{Warning: Image file '#2' not found! Using placeholder.}%
+            % 强制使用 3cm 宽的小图
+            \oldincludegraphics[width=3cm]{example-image}%
+            % 换行 + 红色粗体路径
+            \\ \textcolor{red}{\small\bfseries [Missing: \texttt{\detokenize{#2}}]}%
+        }%
+    \fi
+}
+% ==================================================
+
+% 告诉 LaTeX：如果找不到图片，就去 figures 文件夹里找找看
+\graphicspath{{figures/}}
+
+% \usepackage{dirtree}
+
+\title{空间光调制器实验手册}
+\author{邱金羽} \date{截止到 \zhtoday}
+
+\endinput

@@ -1,0 +1,44 @@
+name: Ele Latexmk Build Workflow
+
+on: workflow_dispatch
+
+jobs:
+  build-with-latexmk:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    # 1. 环境验证
+    - name: Verify Windows Environment
+      shell: powershell
+      run: |
+        Write-Host "Step 1: Verifying OS..."
+        if (-not (Test-Path "C:\")) { throw "Error: C Drive not found!" }
+        Write-Host "Success: Windows Environment Verified."
+
+    # 2. 安装环境 (调用 config 下的脚本)
+    - name: Run Install Script
+      shell: powershell
+      run: .\config\install.ps1
+
+    # 4. 使用 Latexmk 编译 (终极自动化)
+    - name: Compile with Latexmk
+      working-directory: tex/elegantpaper-cn-blx
+      run: |
+        # 参数说明：
+        # -xelatex    : 指定引擎为 xelatex
+        # -synctex=1  : 开启正反向搜索支持 (虽然CI不需要，但习惯加上)
+        # -interaction=nonstopmode : 遇到错误不暂停
+        # -file-line-error : 报错显示具体文件和行号
+        # -outdir=.   : 输出在当前目录
+        latexmk -xelatex -synctex=1 -interaction=nonstopmode -file-line-error -outdir=. main.tex
+
+    # 5. 上传结果
+    - name: Upload Artifact
+      if: success()
+      uses: actions/upload-artifact@v4
+      with:
+        name: latexmk-report
+        path: tex/elegantpaper-cn-blx/main.pdf
