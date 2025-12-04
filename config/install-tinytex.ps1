@@ -40,7 +40,9 @@ Write-Host ">>> [Step 7/8] Installing Packages - Group 4: Template Logic"
 # appendix/abstract/hologo/footmisc: 修复之前报的 .sty not found 错误
 # kvoptions/etoolbox: 处理模板参数和编程逻辑
 # environ/trimspaces: 环境定义与空格处理
-tlmgr install appendix abstract hologo footmisc kvoptions etoolbox environ trimspaces
+# xpatch: 给宏包打补丁的工具，newtx 强依赖它
+# xkeyval: 处理键值对参数的基础包
+tlmgr install appendix abstract hologo footmisc kvoptions etoolbox environ trimspaces xpatch xkeyval
 
 Write-Host ">>> [Step 8/8] Installing Packages - Group 5: Formatting & Features"
 # biblatex/biber: 现代参考文献管理
