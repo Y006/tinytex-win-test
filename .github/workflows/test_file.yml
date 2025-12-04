@@ -16,20 +16,20 @@ jobs:
     - name: Verify Windows Environment
       shell: powershell
       run: |
-        Write-Host "🔍 正在进行环境预检..."
+        Write-Host "正在进行环境预检..."
         
         # 检查操作系统
         Write-Host "OS Core: $env:OS"
         if ($env:OS -ne "Windows_NT") { 
-            throw "❌ 验证失败：这台机器不是 Windows！" 
+            throw "验证失败：这台机器不是 Windows！" 
         }
         
         # 检查盘符 (验证是否为标准 Windows 文件系统)
         if (-not (Test-Path "C:\")) { 
-            throw "❌ 验证失败：找不到 C 盘！" 
+            throw "验证失败：找不到 C 盘！" 
         }
         
-        Write-Host "✅ 环境验证通过：是标准的 Windows Server。"
+        Write-Host "环境验证通过：是标准的 Windows Server。"
 
     # 3. 调用纯净的安装脚本
     - name: Run Install Script
