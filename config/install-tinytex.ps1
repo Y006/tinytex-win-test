@@ -153,14 +153,23 @@ Install-And-Verify -GroupName "Features"        -Packages $Group5
 Install-And-Verify -GroupName "Academic Extras" -Packages $Group6
 
 # ==============================================================================
-# 4. 最终自我诊断报告
+# 4. 【关键修复】强制刷新 LaTeX 数据库 (Fix File Not Found)
+# ==============================================================================
+Write-Host "`n>>> [System] Rebuilding Filename Database (mktexlsr)..."
+# 强制让 LaTeX 重新扫描硬盘上的所有文件
+cmd /c "mktexlsr"
+
+Write-Host ">>> [System] Rebuilding Format Files (fmtutil)..."
+# 重新生成格式文件，确保新字体配置生效
+cmd /c "fmtutil-sys --all"
+
+# ==============================================================================
+# 5. 最终诊断
 # ==============================================================================
 Write-Host "`n=========================================="
 Write-Host "       FINAL SYSTEM DIAGNOSTICS           "
 Write-Host "=========================================="
-
-# 检查最关键的几个包，确保安装无误
-$CriticalChecks = @("scalefnt", "newtx", "ctex", "biblatex", "latexmk", "algorithms")
+$CriticalChecks = @("scalefnt", "newtx", "ctex", "biblatex", "latexmk")
 foreach ($pkg in $CriticalChecks) {
     if (tlmgr info $pkg --only-installed) {
         Write-Host "OK: $pkg" -ForegroundColor Green
@@ -170,4 +179,4 @@ foreach ($pkg in $CriticalChecks) {
     }
 }
 
-Write-Host "`n>>> 🎉 SUCCESS: TinyTeX Environment Ready!" -ForegroundColor Green
+Write-Host "`n>>> SUCCESS: TinyTeX Environment Ready!" -ForegroundColor Green
