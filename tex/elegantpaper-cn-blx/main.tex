@@ -1,4 +1,10 @@
 % ==========================================================
+% 关键修复：在加载类之前，强行指定 ctex 使用 fandol 字体集
+% 这样可以覆盖掉 ctex 在 Windows 下默认寻找 SimHei 的行为
+% ==========================================================
+\PassOptionsToPackage{fontset=fandol}{ctex}
+
+% ==========================================================
 % 文件路径: tex/demo/main.tex
 % ==========================================================
 \documentclass[lang=cn, chinesefont=ctexfont, bibend=bibtex]{elegantpaper}
