@@ -15,8 +15,10 @@ $env:Path = "$tinyTexBin;$env:Path"
 Write-Host ">>> [Step 4/4] Installing dependencies..."
 # 核心修改：加入了 latexmk
 # 同时保留了之前分析出的所有论文写作必备包
+# --- 核心修改：追加了 abstract, hologo, fancyvrb 等模板常用包 ---
 tlmgr install latexmk ctex xecjk beamer pgf ms gbt7714 fandol tools `
               biblatex biber siunitx caption subcaption cleveref `
-              enumitem multirow makecell listings mathtools microtype
+              enumitem multirow makecell listings mathtools microtype `
+              abstract hologo fancyvrb environ trimspaces
 
 Write-Host ">>> SUCCESS: Installation script finished."
