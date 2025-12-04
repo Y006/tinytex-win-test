@@ -25,6 +25,7 @@ tlmgr install latexmk tools `
               appendix abstract hologo kvoptions etoolbox `
               biblatex biber caption subcaption enumitem listings fancyvrb `
               geometry graphics xcolor booktabs multirow makecell `
-              pgf ms gbt7714 siunitx cleveref microtype environ trimspaces
+              pgf ms gbt7714 siunitx cleveref microtype environ trimspaces `
+              footmisc esint iftex
 
 Write-Host ">>> SUCCESS: Installation script finished."
