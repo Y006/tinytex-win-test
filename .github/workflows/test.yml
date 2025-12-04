@@ -7,27 +7,24 @@ jobs:
     runs-on: windows-latest
     
     steps:
-    # --- 第一步：精简验证 (确认是真 Windows) ---
-    - name: 1. 验明正身 (验证环境)
+    # --- 第一步：精简验证 ---
+    - name: 1. 验明正身
       run: |
         Write-Host "正在检查运行环境..."
-        Write-Host "操作系统内核: $env:OS"
-        $osVer = [System.Environment]::OSVersion.VersionString
-        Write-Host "系统版本: $osVer"
-        
-        # 验证 C 盘是否存在 (Linux 没有 C 盘)
         if (Test-Path "C:\") {
             Write-Host "验证通过：检测到 C 盘，确认是 Windows 环境。"
         } else {
             throw "验证失败：未检测到 C 盘！"
         }
 
-    # --- 第二步：创建测试文件 ---
+    # --- 第二步：创建测试文件 (关键修改) ---
     - name: 2. 创建测试用 LaTeX 文件
       run: |
+        # 注意：这里增加了 [fontset=fandol] 选项
+        # 这告诉 ctex 不要找系统字体，而是使用自带的 Fandol 字体，从而兼容无字体的服务器环境
         $texContent = @"
         \documentclass{beamer}
-        \usepackage{ctex}
+        \usepackage[fontset=fandol]{ctex} 
         \usepackage{tikz}
         \begin{document}
         \begin{frame}{测试成功}
@@ -41,27 +38,22 @@ jobs:
         "@
         Set-Content -Path test.tex -Value $texContent -Encoding UTF8
 
-    # --- 第三步：安装 TinyTeX (修复了链接) ---
+    # --- 第三步：安装 TinyTeX ---
     - name: 3. 安装 TinyTeX
-      # 使用 cmd 运行批处理脚本更兼容
       shell: cmd
       run: |
-        REM 下载官方安装脚本 (install-bin-windows.bat 是预编译版，速度更快)
         curl -sL "https://yihui.org/tinytex/install-bin-windows.bat" -o install.bat
-        
-        REM 执行安装
         install.bat
 
     # --- 第四步：配置环境变量 ---
     - name: 4. 添加到系统路径
       run: |
-        # 将 TinyTeX 的二进制目录添加到 GitHub Actions 的临时 PATH 中
         echo "$env:APPDATA\TinyTeX\bin\windows" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
-    # --- 第五步：安装缺失宏包 ---
+    # --- 第五步：安装缺失宏包 (关键修改) ---
     - name: 5. 安装中文与绘图支持
-      # 因为是精简版，需要手动装一下 ctex 和 pgf (TikZ)
-      run: tlmgr install ctex xecjk beamer pgf ms gbt7714
+      # 注意：这里增加了 fandol 包，这是开源中文字体
+      run: tlmgr install ctex xecjk beamer pgf ms gbt7714 fandol
 
     # --- 第六步：编译测试 ---
     - name: 6. 编译 PDF
