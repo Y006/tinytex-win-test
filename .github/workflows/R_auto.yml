@@ -1,0 +1,70 @@
+name: R-Powered Auto Build
+
+on: workflow_dispatch
+
+jobs:
+  build-with-r:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    # 1. 安装 R 语言环境 (使用官方 Action)
+    - name: Set up R
+      uses: r-lib/actions/setup-r@v2
+      with:
+        r-version: 'release'
+
+    # 2. 安装 TinyTeX R 包
+    #    并利用 R 脚本自动安装 TinyTeX 发行版
+    - name: Install TinyTeX via R
+      shell: Rscript {0}
+      run: |
+        # 设置 CRAN 镜像
+        options(repos = c(CRAN = "https://cloud.r-project.org"))
+        
+        # 安装 tinytex R 包
+        install.packages('tinytex')
+        
+        # 安装 TinyTeX 发行版 (会自动配置环境变量)
+        # force=TRUE 确保覆盖可能存在的旧版本
+        tinytex::install_tinytex(force = TRUE)
+
+    # 3. 编译 PDF (这是见证奇迹的时刻)
+    #    tinytex::latexmk() 会在后台做以下事情：
+    #    1. 尝试编译
+    #    2. 发现报错 "File xxx.sty not found"
+    #    3. 自动联网查找 xxx 属于哪个包 -> 自动安装 -> 自动重试
+    #    4. 处理 Biber/BibTeX
+    - name: Compile with Auto-Install
+      working-directory: tex/demo
+      shell: Rscript {0}
+      run: |
+        options(repos = c(CRAN = "https://cloud.r-project.org"))
+        
+        # 加载 R 包
+        library(tinytex)
+        
+        # 显式安装必要的中文包 (为了保险，这几个基础包建议还是手动装一下，虽然它也能自动装)
+        # 但剩下的几百个包，全交给它自动补全
+        tlmgr_install(c('ctex', 'xecjk', 'fandol', 'gbt7714'))
+        
+        # 开始编译
+        # engine="xelatex": 指定引擎
+        # bib_engine="biber": 指定参考文献后端
+        # install_packages=TRUE: 开启自动补全开关！
+        tinytex::latexmk(
+          file = "test2.tex", 
+          engine = "xelatex", 
+          bib_engine = "biber",
+          install_packages = TRUE
+        )
+
+    # 4. 上传结果
+    - name: Upload Artifact
+      if: success()
+      uses: actions/upload-artifact@v4
+      with:
+        name: r-auto-report
+        path: tex/demo/test2.pdf
