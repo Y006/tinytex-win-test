@@ -1,5 +1,6 @@
 name: Modular TinyTeX Build
 
+# 手动触发
 on: workflow_dispatch
 
 jobs:
@@ -7,39 +8,36 @@ jobs:
     runs-on: windows-latest
     
     steps:
+    # 1. 拉取代码
     - name: Checkout Repository
       uses: actions/checkout@v3
 
-    # 【修复】将中文验证日志改为英文，防止 PowerShell 乱码报错
+    # 2. 环境验证 (保持英文日志)
     - name: Verify Windows Environment
       shell: powershell
       run: |
         Write-Host "Step 1: Verifying OS Environment..."
-        
-        Write-Host "OS Core: $env:OS"
-        if ($env:OS -ne "Windows_NT") { 
-            throw "Error: This is NOT a Windows machine!" 
-        }
-        
-        if (-not (Test-Path "C:\")) { 
-            throw "Error: C Drive not found!" 
-        }
-        
+        if ($env:OS -ne "Windows_NT") { throw "Error: Not a Windows machine!" }
+        if (-not (Test-Path "C:\")) { throw "Error: C Drive not found!" }
         Write-Host "Success: Windows Server Environment Verified."
 
-    # 调用脚本
+    # 3. 调用安装脚本 【注意路径变化】
     - name: Run Install Script
       shell: powershell
-      run: .\install-tinytex.ps1
+      # 以前是 .\install.ps1，现在指向 config 目录
+      run: .\config\install-tinytex.ps1
 
-    # 编译
+    # 4. 编译 PDF 【关键修改：进入目录编译】
     - name: Compile PDF
+      # 指定工作目录，这样 LaTeX 处理相对路径(如图片引用)时才不会报错
+      working-directory: tex/demo
       run: xelatex -interaction=nonstopmode test.tex
 
-    # 上传
+    # 5. 上传结果 【注意路径变化】
     - name: Upload Artifact
       if: success()
       uses: actions/upload-artifact@v4
       with:
         name: final-report
-        path: test.pdf
+        # 编译产物会生成在 tex/demo 目录下
+        path: tex/demo/test.pdf
