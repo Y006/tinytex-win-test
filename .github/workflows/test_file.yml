@@ -31,7 +31,7 @@ jobs:
     - name: Compile PDF
       # 指定工作目录，这样 LaTeX 处理相对路径(如图片引用)时才不会报错
       working-directory: tex/demo
-      run: xelatex -interaction=nonstopmode test.tex
+      run: xelatex -interaction=nonstopmode test2.tex
 
     # 5. 上传结果 【注意路径变化】
     - name: Upload Artifact
@@ -40,4 +40,4 @@ jobs:
       with:
         name: final-report
         # 编译产物会生成在 tex/demo 目录下
-        path: tex/demo/test.pdf
+        path: tex/demo/test2.pdf
