@@ -30,7 +30,7 @@ jobs:
     # 调用脚本
     - name: Run Install Script
       shell: powershell
-      run: .\install.ps1
+      run: .\install-tinytex.ps1
 
     # 编译
     - name: Compile PDF
