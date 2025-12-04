@@ -33,7 +33,9 @@ Write-Host ">>> [Step 6/8] Installing Packages - Group 3: Fonts & Math"
 # ams*: 美国数学会数学公式三剑客 (amsmath, amsfonts, amscls)
 # esint: 扩展积分符号
 # iftex: 编译引擎检测工具
-tlmgr install tex-gyre newtx amscls amsmath amsfonts esint iftex
+# mweights: 解决 newtx 依赖缺失报错
+# fontaxes: 字体辅助工具
+tlmgr install tex-gyre newtx amscls amsmath amsfonts esint iftex mweights fontaxes
 
 Write-Host ">>> [Step 7/8] Installing Packages - Group 4: Template Logic"
 # 这些通常是 .cls 文件底层的依赖
@@ -42,7 +44,8 @@ Write-Host ">>> [Step 7/8] Installing Packages - Group 4: Template Logic"
 # environ/trimspaces: 环境定义与空格处理
 # xpatch: 给宏包打补丁的工具，newtx 强依赖它
 # xkeyval: 处理键值对参数的基础包
-tlmgr install appendix abstract hologo footmisc kvoptions etoolbox environ trimspaces xpatch xkeyval
+# xstring: 字符串处理宏包 (解决 File xstring.sty not found 报错)
+tlmgr install appendix abstract hologo footmisc kvoptions etoolbox environ trimspaces xpatch xkeyval xstring
 
 Write-Host ">>> [Step 8/8] Installing Packages - Group 5: Formatting & Features"
 # biblatex/biber: 现代参考文献管理
