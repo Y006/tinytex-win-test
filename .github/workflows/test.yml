@@ -1,6 +1,6 @@
 name: Verify and Test TinyTeX on Windows
 
-on: [push]
+on: workflow_dispatch
 
 jobs:
   test-on-windows:

@@ -1,0 +1,50 @@
+name: Modular TinyTeX Build
+
+# 手动触发
+on: workflow_dispatch
+
+jobs:
+  build-and-test:
+    runs-on: windows-latest
+    
+    steps:
+    # 1. 拉取代码
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    # 2. 【核心修改】环境验证由 Workflow 亲自完成
+    - name: Verify Windows Environment
+      shell: powershell
+      run: |
+        Write-Host "🔍 正在进行环境预检..."
+        
+        # 检查操作系统
+        Write-Host "OS Core: $env:OS"
+        if ($env:OS -ne "Windows_NT") { 
+            throw "❌ 验证失败：这台机器不是 Windows！" 
+        }
+        
+        # 检查盘符 (验证是否为标准 Windows 文件系统)
+        if (-not (Test-Path "C:\")) { 
+            throw "❌ 验证失败：找不到 C 盘！" 
+        }
+        
+        Write-Host "✅ 环境验证通过：是标准的 Windows Server。"
+
+    # 3. 调用纯净的安装脚本
+    - name: Run Install Script
+      shell: powershell
+      run: .\install.ps1
+
+    # 4. 编译 PDF
+    - name: Compile PDF
+      # 此时环境变量里已经有 xelatex 了
+      run: xelatex -interaction=nonstopmode test.tex
+
+    # 5. 上传结果
+    - name: Upload Artifact
+      if: success()
+      uses: actions/upload-artifact@v4
+      with:
+        name: final-report
+        path: test.pdf

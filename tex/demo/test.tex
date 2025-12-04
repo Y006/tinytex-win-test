@@ -1,0 +1,44 @@
+\documentclass{beamer}
+
+% --- 导言区设置 ---
+% [fontset=fandol]: 关键设置。
+% 告诉 ctex 使用开源的 Fandol 字体库，而不是去调 Windows 系统自带的黑体/宋体。
+% 这能保证在 GitHub Actions 的纯净服务器上不报错。
+\usepackage[fontset=fandol]{ctex}
+
+% 引入绘图包
+\usepackage{tikz}
+
+% --- 正文区 ---
+\begin{document}
+
+\title{自动化构建测试}
+\author{GitHub Actions}
+\date{\today}
+
+\begin{frame}
+    \titlepage
+\end{frame}
+
+\begin{frame}{环境验证报告}
+    \begin{itemize}
+        \item \textbf{操作系统}：Windows Server (Verified)
+        \item \textbf{编译引擎}：XeLaTeX + TinyTeX
+        \item \textbf{中文支持}：Fandol 字体集 (正常)
+    \end{itemize}
+    
+    \vspace{0.5cm}
+    
+    % TikZ 绘图测试
+    \begin{center}
+    \begin{tikzpicture}
+        % 画一个带阴影的圆
+        \fill[blue!20] (0,0) circle (1.2cm);
+        \draw[thick, blue] (0,0) circle (1.2cm);
+        % 写字
+        \node at (0,0) {\large \textbf{TikZ 绘图正常}};
+    \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\end{document}
