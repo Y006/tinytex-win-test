@@ -1,0 +1,42 @@
+name: Test TinyTeX on Windows
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: windows-latest  # 重点：指定在 Windows 环境运行
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # 1. 创建一个测试用的 LaTeX 文件（含中文、TikZ）
+    - name: Create Test File
+      run: |
+        Set-Content -Path test.tex -Value "\documentclass{beamer} \usepackage{ctex} \usepackage{tikz} \begin{document} \begin{frame}{测试} \begin{tikzpicture}\draw(0,0)circle(1);\end{tikzpicture} 中文成功 \end{frame} \end{document}"
+
+    # 2. 运行你要测试的“一键安装脚本”
+    - name: Install TinyTeX (The Script)
+      run: |
+        Set-ExecutionPolicy Bypass -Scope Process -Force
+        [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+        iex ((New-Object System.Net.WebClient).DownloadString('https://github.com/rstudio/tinytex/raw/master/tools/install-windows.ps1'))
+
+    # 3. 把 TinyTeX 加入临时环境变量 (模拟重启终端后的效果)
+    - name: Add to PATH
+      run: echo "$env:APPDATA\TinyTeX\bin\windows" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+    # 4. 模拟用户安装常用包 (中文 + Beamer + TikZ)
+    - name: Install Packages
+      run: tlmgr install ctex xecjk beamer pgf ms
+
+    # 5. 测试编译
+    - name: Compile PDF
+      run: xelatex test.tex
+
+    # 6. (可选) 上传生成的 PDF 给你检查
+    - name: Upload PDF
+      uses: actions/upload-artifact@v4
+      with:
+        name: result-pdf
+        path: test.pdf
